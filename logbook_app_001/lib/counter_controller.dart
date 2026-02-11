@@ -29,11 +29,13 @@ class CounterController {
   List<String> get logs => _logs;
 
   void addLog(String action) {
-    final timeStamp = DateTime.now().hour.toString().padLeft(2, '0');
+    final Hour = DateTime.now().hour.toString().padLeft(2, '0');
+    final Minute = DateTime.now().minute.toString().padLeft(2, '0');
+    final Second = DateTime.now().second.toString().padLeft(2, '0');
 
     _logs.insert(
       0,
-      "User $action nilai sebesar $step pada pukul $timeStamp",
-    ); // _logs.add('$timestamp: $action to $_counter');
+      "User $action nilai sebesar $step pada pukul $Hour:$Minute:$Second",
+    );
   }
 }

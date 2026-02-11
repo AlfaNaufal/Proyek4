@@ -37,7 +37,7 @@ class _CounterViewState extends State<CounterView> {
             //   keyboardType: TextInputType.number,
             //   decoration: const InputDecoration(
             //     border: OutlineInputBorder(),
-            //     hintText: 'Masukkan nilai step',
+            //     hintText: 'Masukkan nilai step (Max 100)',
             //   ),
             //   onChanged: (value) => setState(() {
             //     final stepValue = int.tryParse(value);
@@ -61,10 +61,20 @@ class _CounterViewState extends State<CounterView> {
               child: ListView.builder(
                 itemCount: 5,
                 itemBuilder: (context, index) {
-                return ListTile(
+                  Color textColor = Colors.black;
+
+                  if (_controller.logs[index].contains("Menambah")) {
+                    textColor = Colors.green;
+                  } else if (_controller.logs[index].contains("Mengurangi")) {
+                    textColor = Colors.red;
+                  } else if (_controller.logs[index].contains("Mereset")) {
+                    textColor = Colors.blue;
+                  }
+
+                  return ListTile(
                     title: Text(
                       _controller.logs[index],
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14, color: textColor),
                     ),
                   );
                 },
@@ -74,23 +84,37 @@ class _CounterViewState extends State<CounterView> {
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 50),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FloatingActionButton(
               onPressed: () => setState(() => _controller.stepDecrement()),
-              child: const Icon(Icons.remove),
+              child: Icon(Icons.remove),
+              backgroundColor: Colors.red,
             ),
+            SizedBox(width: 30),
             FloatingActionButton(
-              onPressed: () => setState(() => _controller.stepReset()),
-              child: const Icon(Icons.refresh),
+              onPressed: () {
+                final snackBar = SnackBar(
+                  content: Text('Counter Akan direset ke 0'),
+                  action: SnackBarAction(
+                    label: 'Reset',
+                    onPressed: () => setState(() => _controller.stepReset()),
+                  ),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+              child: Icon(Icons.refresh),
+              backgroundColor: Colors.blue,
             ),
+            SizedBox(width: 30),
             FloatingActionButton(
               onPressed: () {
                 setState(() => _controller.stepIncrement());
               },
-              child: const Icon(Icons.add),
+              child: Icon(Icons.add),
+              backgroundColor: Colors.green,
             ),
           ],
         ),
