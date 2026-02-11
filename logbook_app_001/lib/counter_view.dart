@@ -9,7 +9,6 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends State<CounterView> {
   final CounterController _controller = CounterController();
-
   final stepController = TextEditingController();
 
   @override
@@ -31,38 +30,41 @@ class _CounterViewState extends State<CounterView> {
           children: [
             const Text("Total Hitungan: ", style: TextStyle(fontSize: 25)),
             Text('${_controller.value}', style: const TextStyle(fontSize: 40)),
-            const Text("Nilai Step: ", style: TextStyle(fontSize: 10)),
-            TextField(
-              controller: stepController,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 20),
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Masukkan nilai step',
-              ),
-              onChanged: (value) => setState(() {
-                final stepValue = int.tryParse(value);
-                if (stepValue != null && stepValue > 0) {
-                  _controller.setStep(stepValue);
-                }
-              }),
+            // TextField(
+            //   controller: stepController,
+            //   textAlign: TextAlign.center,
+            //   style: const TextStyle(fontSize: 20),
+            //   keyboardType: TextInputType.number,
+            //   decoration: const InputDecoration(
+            //     border: OutlineInputBorder(),
+            //     hintText: 'Masukkan nilai step',
+            //   ),
+            //   onChanged: (value) => setState(() {
+            //     final stepValue = int.tryParse(value);
+            //     if (stepValue != null && stepValue > 0) {
+            //       _controller.setStep(stepValue);
+            //     }
+            //   }),
+            // ),
+            Slider(
+              value: _controller.step.toDouble(),
+              max: 100,
+              onChanged: (double value) {
+                setState(() {
+                  _controller.setStep(value.toInt());
+                });
+              },
             ),
+            Text("Nilai Step: ", style: TextStyle(fontSize: 20)),
+            Text('${_controller.step}', style: const TextStyle(fontSize: 40)),
             Expanded(
               child: ListView.builder(
-                itemCount: _controller.logs.length,
+                itemCount: 5,
                 itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    child: ListTile(
-                      leading: const Icon(Icons.history, size: 20),
-                      title: Text(
-                        _controller.logs[index],
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                return ListTile(
+                    title: Text(
+                      _controller.logs[index],
+                      style: const TextStyle(fontSize: 14),
                     ),
                   );
                 },
