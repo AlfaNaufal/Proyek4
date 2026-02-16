@@ -1,10 +1,21 @@
 class LoginController {
-  final String _validusername = "admin";
-  final String _validpassword = "admin123";
+  // final Map<String, String> _validuser = {
+  //   "username": "admin123",
+  //   "user1": "password1",
+  //   "user2": "password2",
+  // };
+  final List<Map<String, String>> _validuser = [
+    {"username": "admin", "password": "admin123"},
+    {"username": "user1", "password": "pw1"},
+    {"username": "user2", "password": "pw2"},
+  ];
 
-  bool login(String uname, String password) {
-    if (uname == _validusername && password == _validpassword) {
-      return true;
+  bool login(Map<String, String> uname, Map<String, String> password) {
+    for (var user in _validuser) {
+      print(user);
+      if (uname == user["username"] && password == user["password"]) {
+        return true;
+      }
     }
     return false;
   }

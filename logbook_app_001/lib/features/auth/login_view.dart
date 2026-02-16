@@ -14,15 +14,15 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _passController = TextEditingController();
 
   void _handleLogin() {
-    String user = _userController.text;
-    String pass = _passController.text;
+    Map<String, String> user = {"username": _userController.text};
+    Map<String, String> pass = {"password": _passController.text};
 
     bool isSuccess = _controller.login(user, pass);
 
     if (isSuccess) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => CounterView(username: user)),
+        MaterialPageRoute(builder: (context) => CounterView(username: user['username']!)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
