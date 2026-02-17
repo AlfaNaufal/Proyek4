@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:logbook_app_001/features/auth/login_view.dart';
 import 'counter_controller.dart';
 
 class CounterView extends StatefulWidget {
-  final String username;
-  const CounterView({super.key, required this.username});
+  const CounterView({super.key});
   @override
   State<CounterView> createState() => _CounterViewState();
 }
@@ -23,77 +21,26 @@ class _CounterViewState extends State<CounterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("LogBook: ${widget.username}"),
+        title: const Text("LogBook: Versi SRP"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("Konfirmasi Logout"),
-                    content: Text(
-                      "Apakah anda yakin? Data yang belum disimpan mungkin akan hilang.",
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text("Batal"),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginView(),
-                            ),
-                            (route) => false,
-                          );
-                        },
-                        child: Text(
-                          "Ya, keluar",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 30),
+        padding: const EdgeInsets.only(top: 80,),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: 100),
-              Text(
-                "Selamat Datang, ${widget.username}!",
-                style: TextStyle(fontSize: 30),
-              ),
               Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16), 
                   child: Column(
                     children: [
-                      const Text(
-                        "Total Hitungan: ",
-                        style: TextStyle(fontSize: 25),
-                      ),
-                      Text(
-                        '${_controller.value}',
-                        style: const TextStyle(fontSize: 40),
-                      ),
-                    ],
-                  ),
-                ),
+                      const Text("Total Hitungan: ", style: TextStyle(fontSize: 25)),
+                      Text('${_controller.value}', style: const TextStyle(fontSize: 40)),
+        
+                    ]
+                  )),
               ),
               // TextField(
               //   controller: stepController,
@@ -127,7 +74,7 @@ class _CounterViewState extends State<CounterView> {
                   itemCount: 5,
                   itemBuilder: (context, index) {
                     Color textColor = Colors.black;
-
+        
                     if (_controller.logs[index].contains("Menambah")) {
                       textColor = Colors.green;
                     } else if (_controller.logs[index].contains("Mengurangi")) {
@@ -135,7 +82,7 @@ class _CounterViewState extends State<CounterView> {
                     } else if (_controller.logs[index].contains("Mereset")) {
                       textColor = Colors.blue;
                     }
-
+        
                     return ListTile(
                       title: Text(
                         _controller.logs[index],
@@ -151,8 +98,7 @@ class _CounterViewState extends State<CounterView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     FloatingActionButton(
-                      onPressed: () =>
-                          setState(() => _controller.stepDecrement()),
+                      onPressed: () => setState(() => _controller.stepDecrement()),
                       child: Icon(Icons.remove),
                       backgroundColor: Colors.red,
                     ),
@@ -164,8 +110,7 @@ class _CounterViewState extends State<CounterView> {
                           duration: Duration(seconds: 3),
                           action: SnackBarAction(
                             label: 'Reset',
-                            onPressed: () =>
-                                setState(() => _controller.stepReset()),
+                            onPressed: () => setState(() => _controller.stepReset()),
                           ),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -188,6 +133,7 @@ class _CounterViewState extends State<CounterView> {
           ),
         ),
       ),
+      
     );
   }
 }
