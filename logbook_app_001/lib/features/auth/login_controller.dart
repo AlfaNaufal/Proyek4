@@ -10,10 +10,11 @@ class LoginController {
     {"username": "user2", "password": "pw2"},
   ];
 
-  bool login(Map<String, String> uname, Map<String, String> password) {
+  bool login(Map<String, String> validUser) {
     for (var user in _validuser) {
-      print(user);
-      if (uname == user["username"] && password == user["password"]) {
+      // print(user);
+      if (validUser["username"] == user["username"] &&
+          validUser["password"] == user["password"]) {
         return true;
       }
     }

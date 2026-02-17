@@ -21,7 +21,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             Text('$_step', style: TextStyle(fontSize: 50)),
             ElevatedButton(
               onPressed: () {
-                if (_step < 3) {
+                if (_step < 2) {
                   setState(() {
                     _step++;
                   });
