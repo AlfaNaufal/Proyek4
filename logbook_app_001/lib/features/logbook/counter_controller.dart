@@ -1,30 +1,47 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 class CounterController {
   int _counter = 0;
   int _step = 1; //default step value
-
-  final List<String> _logs = ["", "", "", "", ""];
+  List<String> _logs = [];
 
   int get value => _counter;
   int get step => _step;
 
-  void setStep(value) {
+
+  Future<void> saveLastValue(int value, List<String> logs) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('lastCounter', value);
+    await prefs.setStringList('logs', logs);
+  }
+
+  Future<void> loadLastValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    _counter = prefs.getInt('lastCounter') ?? 0;
+    _logs = prefs.getStringList('logs') ?? [];
+  }
+
+  void setStep(int value) {
     _step = value;
   }
 
   void stepIncrement() {
     _counter += step;
     addLog("Menambah");
+    saveLastValue(_counter, _logs);
   }
 
   void stepDecrement() {
     if (_counter >= step) _counter -= step;
     addLog("Mengurangi");
+    saveLastValue(_counter, _logs);
   }
 
   void stepReset() {
-     _counter = 0;
-     addLog("Mereset");
-     }
+    _counter = 0;
+    addLog("Mereset");
+    saveLastValue(_counter, _logs);
+  }
 
   List<String> get logs => _logs;
 

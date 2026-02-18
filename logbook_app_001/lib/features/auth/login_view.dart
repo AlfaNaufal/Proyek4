@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:logbook_app_001/features/auth/login_controller.dart';
 import 'package:logbook_app_001/features/logbook/counter_view.dart';
@@ -14,7 +13,7 @@ class _LoginViewState extends State<LoginView> {
   final LoginController _controller = LoginController();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
-  bool _show = false;
+  bool _show = true;
   bool _validateUser = false;
   bool _validatePass = false;
   bool _isActive = true;
@@ -46,6 +45,7 @@ class _LoginViewState extends State<LoginView> {
       print("Percobaan login: $_count");
       if (_count > 3) {
         print("masuk");
+        _count = 1;
         setState(() => _isActive = false);
         _startTimer();
         ScaffoldMessenger.of(context).showSnackBar(

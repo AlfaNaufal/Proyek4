@@ -5,7 +5,7 @@ class LoginController {
   //   "user2": "password2",
   // };
   final List<Map<String, String>> _validuser = [
-    {"username": "admin", "password": "admin123"},
+    {"username": "admin", "password": "123"},
     {"username": "user1", "password": "pw1"},
     {"username": "user2", "password": "pw2"},
   ];
