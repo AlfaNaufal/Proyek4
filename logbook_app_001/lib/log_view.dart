@@ -5,7 +5,8 @@ import 'log_controller.dart';
 import 'features/auth/login_view.dart';
 
 class LogView extends StatefulWidget {
-  const LogView({super.key});
+  final String username;
+  const LogView({super.key, required this.username});
 
   @override
   State<LogView> createState() => _LogViewState();
@@ -146,13 +147,11 @@ class _LogViewState extends State<LogView> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("LogBook"),
+        title: Text("LogBook : ${widget.username}"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
@@ -236,7 +235,7 @@ class _LogViewState extends State<LogView> {
                   itemBuilder: (context, index) {
                     final log = currentLogs[index];
                     Color textColor = Colors.white;
-      
+
                     if (log.category == "Penting") {
                       textColor = Colors.red;
                     } else if (log.category == "Pribadi") {
@@ -264,16 +263,22 @@ class _LogViewState extends State<LogView> {
                         color: textColor,
                         child: ListTile(
                           leading: const Icon(Icons.note),
-                          title: Text(log.title, style: TextStyle(fontSize: 30),),
+                          title: Text(
+                            log.title,
+                            style: TextStyle(fontSize: 30),
+                          ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(log.category),
-                              Text(log.description, style: TextStyle(fontSize: 20),),
+                              Text(
+                                log.description,
+                                style: TextStyle(fontSize: 20),
+                              ),
                             ],
                           ),
                           trailing: IconButton(
-                            icon: const Icon(Icons.edit,),
+                            icon: const Icon(Icons.edit),
                             onPressed: () => _showEditLogDialog(index, log),
                           ),
                         ),
