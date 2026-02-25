@@ -2,6 +2,7 @@ class LogModel {
 
   final String title; 
   final String date; 
+  final String category;
   final String description; 
 
  
@@ -10,6 +11,7 @@ class LogModel {
 
     required this.title,
     required this.date, 
+    required this.category, 
     required this.description, 
 
   }); 
@@ -22,7 +24,8 @@ class LogModel {
     return LogModel( 
 
       title: map['title'], 
-      date: map['date'], 
+      date: map['date'],
+      category: map['category'],
       description: map['description'], 
     ); 
   } 
@@ -36,6 +39,7 @@ class LogModel {
 
       'title': title, 
       'date': date, 
+      'category': category,
       'description': description, 
     };
 

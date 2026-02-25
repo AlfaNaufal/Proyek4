@@ -11,10 +11,11 @@ class LogController {
     loadFromDisk();
   }
 
-  void addLog(String title, String desc) {
+  void addLog(String title, String desc, String category) {
     final newLog = LogModel(
       title: title,
       description: desc,
+      category: category,
       date: DateTime.now().toString(),
     );
     logsNotifier.value = [...logsNotifier.value, newLog];
@@ -22,11 +23,12 @@ class LogController {
     saveToDisk();
   }
 
-  void updateLog(int index, String title, String desc) {
+  void updateLog(int index, String title, String desc, String category) {
     final currentLogs = List<LogModel>.from(logsNotifier.value);
     currentLogs[index] = LogModel(
       title: title,
       description: desc,
+      category: category,
       date: DateTime.now().toString(),
     );
     logsNotifier.value = currentLogs;
@@ -42,24 +44,24 @@ class LogController {
     saveToDisk();
   }
 
-  // void searchLog(String logTitle) {
-  //   final currentLogs = List<LogModel>.from(logsNotifier.value);
-  //   final searchResults = currentLogs.where((log) => log.title.toLowerCase().contains(logTitle.toLowerCase())).toList();
-  //   logsNotifier.value = searchResults;
-  // }
+  void searchLog(String logTitle) {
+    final currentLogs = List<LogModel>.from(logsNotifier.value);
+    final searchResults = currentLogs.where((log) => log.title.toLowerCase().contains(logTitle.toLowerCase())).toList();
+    logsNotifier.value = searchResults;
+  }
 
   // List cadangan untuk hasil pencarian
-  ValueNotifier<List<LogModel>> filteredLogs = ValueNotifier([]);
+  // ValueNotifier<List<LogModel>> filteredLogs = ValueNotifier([]);
 
-  void searchLog(String query) {
-    if (query.isEmpty) {
-      filteredLogs.value = logsNotifier.value;
-    } else {
-      filteredLogs.value = logsNotifier.value
-          .where((log) => log.title.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    }
-  }
+  // void searchLog(String query) {
+  //   if (query.isEmpty) {
+  //     filteredLogs.value = logsNotifier.value;
+  //   } else {
+  //     filteredLogs.value = logsNotifier.value
+  //         .where((log) => log.title.toLowerCase().contains(query.toLowerCase()))
+  //         .toList();
+  //   }
+  // }
 
 
   Future<void> saveToDisk() async {

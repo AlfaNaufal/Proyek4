@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'features/models/log_model.dart';
 import 'log_controller.dart';
@@ -16,44 +17,68 @@ class _LogViewState extends State<LogView> {
   final TextEditingController _titleColntroller = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
+  final List<String> _categories = ["Penting", "Pribadi", "Pekerjaan", "umum"];
+  String _selectedCategory = "umum";
+
   void _showAddLogDialog() {
+    _selectedCategory = "umum";
+    print("masuk");
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Tambah Catatan Baru"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _titleColntroller,
-              decoration: const InputDecoration(hintText: "Judul Catatan"),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Tambah Catatan Baru"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _titleColntroller,
+                decoration: const InputDecoration(hintText: "Judul Catatan"),
+              ),
+              TextField(
+                controller: _contentController,
+                decoration: const InputDecoration(hintText: "Isi Deskripsi"),
+              ),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCategory,
+                decoration: const InputDecoration(labelText: "Kategori"),
+                items: _categories.map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setDialogState(() {
+                    _selectedCategory = newValue!;
+                  });
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Batal"),
             ),
-            TextField(
-              controller: _contentController,
-              decoration: const InputDecoration(hintText: "Isi Deskripsi"),
+            ElevatedButton(
+              onPressed: () {
+                _controller.addLog(
+                  _titleColntroller.text,
+                  _contentController.text,
+                  _selectedCategory,
+                );
+                setState(() {});
+
+                _titleColntroller.clear();
+                _contentController.clear();
+                Navigator.pop(context);
+              },
+              child: const Text("Simpan"),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _controller.addLog(
-                _titleColntroller.text,
-                _contentController.text,
-              );
-              setState(() {});
-
-              _titleColntroller.clear();
-              _contentController.clear();
-              Navigator.pop(context);
-            },
-            child: const Text("Simpan"),
-          ),
-        ],
       ),
     );
   }
@@ -62,42 +87,66 @@ class _LogViewState extends State<LogView> {
     _titleColntroller.text = log.title;
     _contentController.text = log.description;
 
+    _selectedCategory = _categories.contains(log.category)
+        ? log.category
+        : 'Lainnya';
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Edit Catatan"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: _titleColntroller),
-            TextField(controller: _contentController),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Edit Catatan"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: _titleColntroller),
+              TextField(controller: _contentController),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCategory,
+                decoration: const InputDecoration(labelText: "Kategori"),
+                items: _categories.map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setDialogState(() {
+                    _selectedCategory = newValue!;
+                  });
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _controller.updateLog(
+                  index,
+                  _titleColntroller.text,
+                  _contentController.text,
+                  _selectedCategory,
+                );
+
+                setState(() {});
+
+                _titleColntroller.clear();
+                _contentController.clear();
+                Navigator.pop(context);
+              },
+              child: const Text("Update"),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _controller.updateLog(
-                index,
-                _titleColntroller.text,
-                _contentController.text,
-              );
-
-              setState(() {});
-
-              _titleColntroller.clear();
-              _contentController.clear();
-              Navigator.pop(context);
-            },
-            child: const Text("Update"),
-          ),
-        ],
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +235,16 @@ class _LogViewState extends State<LogView> {
                   itemCount: currentLogs.length,
                   itemBuilder: (context, index) {
                     final log = currentLogs[index];
+                    Color textColor = Colors.white;
+      
+                    if (log.category == "Penting") {
+                      textColor = Colors.red;
+                    } else if (log.category == "Pribadi") {
+                      textColor = Colors.blue;
+                    } else if (log.category == "Pekerjaan") {
+                      textColor = Colors.orange;
+                    }
+
                     return Dismissible(
                       key: Key(log.date),
                       direction: DismissDirection.endToStart,
@@ -202,15 +261,19 @@ class _LogViewState extends State<LogView> {
                         );
                       },
                       child: Card(
+                        color: textColor,
                         child: ListTile(
                           leading: const Icon(Icons.note),
-                          title: Text(log.title),
-                          subtitle: Text(log.description),
+                          title: Text(log.title, style: TextStyle(fontSize: 30),),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(log.category),
+                              Text(log.description, style: TextStyle(fontSize: 20),),
+                            ],
+                          ),
                           trailing: IconButton(
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.blue,
-                            ),
+                            icon: const Icon(Icons.edit,),
                             onPressed: () => _showEditLogDialog(index, log),
                           ),
                         ),
