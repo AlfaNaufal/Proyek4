@@ -12,6 +12,20 @@ class CounterView extends StatefulWidget {
 class _CounterViewState extends State<CounterView> {
   final CounterController _controller = CounterController();
   final stepController = TextEditingController();
+  
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 6 && hour < 11) {
+      return "Selamat Pagi";
+    } else if (hour >= 11 && hour < 15) {
+      return "Selamat Siang";
+    } else if (hour >= 15 && hour < 18) {
+      return "Selamat Sore";
+    } else {
+      return "Selamat Malam";
+    }
+  }
 
   @override
   void initState() {
@@ -81,7 +95,7 @@ class _CounterViewState extends State<CounterView> {
           children: [
             SizedBox(height: 50),
             Text(
-              "Selamat Datang, ${widget.username}!",
+              "${getGreeting()}, ${widget.username}!",
               style: TextStyle(fontSize: 30),
             ),
             Card(
