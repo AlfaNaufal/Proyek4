@@ -42,6 +42,26 @@ class LogController {
     saveToDisk();
   }
 
+  // void searchLog(String logTitle) {
+  //   final currentLogs = List<LogModel>.from(logsNotifier.value);
+  //   final searchResults = currentLogs.where((log) => log.title.toLowerCase().contains(logTitle.toLowerCase())).toList();
+  //   logsNotifier.value = searchResults;
+  // }
+
+  // List cadangan untuk hasil pencarian
+  ValueNotifier<List<LogModel>> filteredLogs = ValueNotifier([]);
+
+  void searchLog(String query) {
+    if (query.isEmpty) {
+      filteredLogs.value = logsNotifier.value;
+    } else {
+      filteredLogs.value = logsNotifier.value
+          .where((log) => log.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+  }
+
+
   Future<void> saveToDisk() async {
     final prefs = await SharedPreferences.getInstance();
     final String encodedData = jsonEncode(

@@ -147,36 +147,81 @@ class _LogViewState extends State<LogView> {
           ),
         ],
       ),
-      body: ValueListenableBuilder<List<LogModel>>(
-        valueListenable: _controller.logsNotifier,
-        builder: (context, currentLogs, child) {
-          if (currentLogs.isEmpty)
-            return const Center(child: Text("Belum ada catatan."));
-          return ListView.builder(
-            itemCount: currentLogs.length,
-            itemBuilder: (context, index) {
-              final log = currentLogs[index];
-              return ListTile(
-                leading: const Icon(Icons.note),
-                title: Text(log.title),
-                subtitle: Text(log.description),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => _showEditLogDialog(index, log),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.blue),
-                      onPressed: () => _controller.removeLog(index),
-                    ),
-                  ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: TextField(
+              onChanged: (Text) {
+                _controller.searchLog(Text);
+              },
+              decoration: InputDecoration(
+                hintText: "Cari catatan...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-              );
-            },
-          );
-        },
+                suffixIcon: Icon(Icons.search),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ValueListenableBuilder<List<LogModel>>(
+              valueListenable: _controller.logsNotifier,
+              builder: (context, currentLogs, child) {
+                if (currentLogs.isEmpty)
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.note_alt_outlined,
+                          size: 100,
+                          color: Colors.grey,
+                        ),
+                        Text("Belum ada catatan."),
+                      ],
+                    ),
+                  );
+                return ListView.builder(
+                  itemCount: currentLogs.length,
+                  itemBuilder: (context, index) {
+                    final log = currentLogs[index];
+                    return Dismissible(
+                      key: Key(log.date),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      onDismissed: (direction) {
+                        _controller.removeLog(index);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Catatan dihapus")),
+                        );
+                      },
+                      child: Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.note),
+                          title: Text(log.title),
+                          subtitle: Text(log.description),
+                          trailing: IconButton(
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.blue,
+                            ),
+                            onPressed: () => _showEditLogDialog(index, log),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddLogDialog,
