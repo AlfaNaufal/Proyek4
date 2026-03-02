@@ -9,17 +9,9 @@ class OnboardingView extends StatefulWidget {
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
-  
   int _step = 1;
 
   final PageController _pageController = PageController();
-
-  String pict = 'lib/assets/ichigo.jpg';
-  List<String> text = [
-    "Selamat datang di Counter!!!",
-    "Counter siap menghitung!!",
-    "Anda bisa menambah dan mengurangi angka!!",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -36,59 +28,123 @@ class _OnboardingViewState extends State<OnboardingView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
                       SizedBox(
                         width: MediaQuery.widthOf(context) / 2,
-                        child: Image.asset('lib/assets/ichigo.jpg', fit: BoxFit.contain),
+                        child: Image.asset(
+                          'lib/assets/ichigo.jpg',
+                          fit: BoxFit.contain,
+                        ),
                       ),
+                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
                       // Text('${text[_step - 1]}', style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
-                      SizedBox(
-                        width: MediaQuery.widthOf(context) / 2,
-                        child: Image.asset('lib/assets/Nigo.jpg', fit: BoxFit.contain),
-                      ),
-                      Text('${text[_step - 1]}', style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
-                      SizedBox(
-                        width: MediaQuery.widthOf(context) / 2,
-                        child: Image.asset('lib/assets/both.jpg', fit: BoxFit.contain),
-                      ),
-                      Text('${text[_step - 1]}', style: TextStyle(fontSize: 16)),
                       ElevatedButton(
                         onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginView()),
-                            );
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.bounceIn,
+                          );
                         },
                         child: Text("Next"),
                       ),
                     ],
                   ),
                 ),
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
+                      SizedBox(
+                        width: MediaQuery.widthOf(context) / 2,
+                        child: Image.asset(
+                          'lib/assets/Nigo.jpg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Text(
+                        'Selamat Datang!',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.bounceIn,
+                              );
+                            },
+                            child: Text("Prev"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.bounceIn,
+                              );
+                            },
+                            child: Text("Next"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
+                      SizedBox(
+                        width: MediaQuery.widthOf(context) / 2,
+                        child: Image.asset(
+                          'lib/assets/both.jpg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      Text(
+                        'Selamat Datang',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.bounceInOut,
+                              );
+                            },
+                            child: Text("Prev"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginView(),
+                                ),
+                              );
+                            },
+                            child: Text("Next"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
-            )),
-            SmoothPageIndicator(
-              controller: _pageController, 
-              count: 3),
-            SizedBox(height: 50,)
+            ),
+          ),
+          SmoothPageIndicator(controller: _pageController, count: 3),
+          SizedBox(height: 50),
         ],
-      )
-      
+      ),
+
       // Center(
       //   child: Column(
       //     mainAxisAlignment: MainAxisAlignment.center,
@@ -126,4 +182,3 @@ class _OnboardingViewState extends State<OnboardingView> {
     );
   }
 }
-

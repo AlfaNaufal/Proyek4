@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'features/models/log_model.dart';
 import 'log_controller.dart';
 import 'features/auth/login_view.dart';
+import 'package:logbook_app_001/helpers/log_helper.dart';
+import 'package:logbook_app_001/services/mongo_service.dart';
 
 class LogView extends StatefulWidget {
   final String username;
@@ -13,13 +15,82 @@ class LogView extends StatefulWidget {
 }
 
 class _LogViewState extends State<LogView> {
-  final LogController _controller = LogController();
+  late LogController _controller = LogController();
 
   final TextEditingController _titleColntroller = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
   final List<String> _categories = ["Penting", "Pribadi", "Pekerjaan", "umum"];
   String _selectedCategory = "umum";
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = LogController();
+
+    // Memberikan kesempatan UI merender widget awal sebelum proses berat dimulai
+    Future.microtask(() => _initDatabase());
+  }
+
+  Future<void> _initDatabase() async {
+    setState(() => _isLoading = true);
+    try {
+      await LogHelper.writeLog(
+        "UI: Memulai inisialisasi database...",
+        source: "log_view.dart",
+      );
+
+      // Mencoba koneksi ke MongoDB Atlas (Cloud)
+      await LogHelper.writeLog(
+        "UI: Menghubungi MongoService.connect()...",
+        source: "log_view.dart",
+      );
+
+      // Mengaktifkan kembali koneksi dengan timeout 15 detik (lebih longgar untuk sinyal HP)
+      await MongoService().connect().timeout(
+        const Duration(seconds: 15),
+        onTimeout: () => throw Exception(
+          "Koneksi Cloud Timeout. Periksa sinyal/IP Whitelist.",
+        ),
+      );
+
+      await LogHelper.writeLog(
+        "UI: Koneksi MongoService BERHASIL.",
+        source: "log_view.dart",
+      );
+
+      // Mengambil data log dari Cloud
+      await LogHelper.writeLog(
+        "UI: Memanggil controller.loadFromDisk()...",
+        source: "log_view.dart",
+      );
+
+      await _controller.loadFromDisk();
+
+      await LogHelper.writeLog(
+        "UI: Data berhasil dimuat ke Notifier.",
+        source: "log_view.dart",
+      );
+    } catch (e) {
+      await LogHelper.writeLog(
+        "UI: Error - $e",
+        source: "log_view.dart",
+        level: 1,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Masalah: $e"), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      // 2. INILAH FINALLY: Apapun yang terjadi (Sukses/Gagal/Data Kosong), loading harus mati
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   void _showAddLogDialog() {
     _selectedCategory = "umum";
@@ -216,7 +287,18 @@ class _LogViewState extends State<LogView> {
             child: ValueListenableBuilder<List<LogModel>>(
               valueListenable: _controller.logsNotifier,
               builder: (context, currentLogs, child) {
-                if (currentLogs.isEmpty)
+                if (_isLoading) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        Text("Menghubungkan ke MongoDB Atlas...."),
+                      ],
+                    ),
+                  );
+                }
+                if (currentLogs.isEmpty){
                   return const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -226,10 +308,11 @@ class _LogViewState extends State<LogView> {
                           size: 100,
                           color: Colors.grey,
                         ),
-                        Text("Belum ada catatan."),
+                        Text("Belum ada catatan di Cloud."),
                       ],
                     ),
                   );
+                }
                 return ListView.builder(
                   itemCount: currentLogs.length,
                   itemBuilder: (context, index) {
@@ -245,7 +328,7 @@ class _LogViewState extends State<LogView> {
                     }
 
                     return Dismissible(
-                      key: Key(log.date),
+                      key: Key(log.date.toString()),
                       direction: DismissDirection.endToStart,
                       background: Container(
                         color: Colors.red,
