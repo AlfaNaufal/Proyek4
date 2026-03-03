@@ -22,26 +22,23 @@ class _OnboardingViewState extends State<OnboardingView> {
         children: [
           Expanded(
             child: PageView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
                 Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: MediaQuery.widthOf(context) / 2,
-                        child: Image.asset(
-                          'lib/assets/ichigo.jpg',
-                          fit: BoxFit.contain,
-                        ),
+                      Image.asset(
+                        'lib/assets/ichigo.png',
+                        width: MediaQuery.widthOf(context)/2,
                       ),
                       Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
-                      // Text('${text[_step - 1]}', style: TextStyle(fontSize: 16)),
                       ElevatedButton(
                         onPressed: () {
                           _pageController.nextPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.bounceIn,
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease,
                           );
                         },
                         child: Text("Next"),
@@ -53,18 +50,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
-                      SizedBox(
-                        width: MediaQuery.widthOf(context) / 2,
+                      Padding(
+                        padding: const EdgeInsetsGeometry.only(bottom: 20),
                         child: Image.asset(
-                          'lib/assets/Nigo.jpg',
-                          fit: BoxFit.contain,
+                          'lib/assets/Nigo.png',
+                          width: MediaQuery.widthOf(context)/2,
                         ),
                       ),
-                      Text(
-                        'Selamat Datang!',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      Text('Satu langkah kecil hari ini\nadalah lompatan besar besok.\nAyo mulai!', style: TextStyle(fontSize: 18), textAlign: TextAlign.center,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,8 +65,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                           ElevatedButton(
                             onPressed: () {
                               _pageController.previousPage(
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.bounceIn,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeIn,
                               );
                             },
                             child: Text("Prev"),
@@ -81,8 +74,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                           ElevatedButton(
                             onPressed: () {
                               _pageController.nextPage(
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.bounceIn,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.ease,
                               );
                             },
                             child: Text("Next"),
@@ -96,18 +89,13 @@ class _OnboardingViewState extends State<OnboardingView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Selamat Datang!", style: TextStyle(fontSize: 20)),
-                      SizedBox(
-                        width: MediaQuery.widthOf(context) / 2,
-                        child: Image.asset(
-                          'lib/assets/both.jpg',
-                          fit: BoxFit.contain,
-                        ),
+                      Image.asset(
+                        'lib/assets/both.png',
+                        width: MediaQuery.widthOf(context)/2,
                       ),
-                      Text(
-                        'Selamat Datang',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      Text('Kesalahan adalah bukti\nbahwa Anda sedang mencoba.\nJangan takut salah!', 
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,8 +103,8 @@ class _OnboardingViewState extends State<OnboardingView> {
                           ElevatedButton(
                             onPressed: () {
                               _pageController.previousPage(
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.bounceInOut,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeIn,
                               );
                             },
                             child: Text("Prev"),
@@ -140,7 +128,10 @@ class _OnboardingViewState extends State<OnboardingView> {
               ],
             ),
           ),
-          SmoothPageIndicator(controller: _pageController, count: 3),
+          SmoothPageIndicator(
+            controller: _pageController, 
+            count: 3,
+            effect: JumpingDotEffect(),),
           SizedBox(height: 50),
         ],
       ),
@@ -159,10 +150,10 @@ class _OnboardingViewState extends State<OnboardingView> {
       //         onPressed: () {
       //           if (_step < 3) {
       //             if (_step == 1) {
-      //               pict = 'lib/assets/Nigo.jpg';
+      //               pict = 'lib/assets/Nigo.png';
       //             }
       //             if (_step == 2) {
-      //               pict = 'lib/assets/both.jpg';
+      //               pict = 'lib/assets/both.png';
       //             }
       //             setState(() {
       //               _step++;

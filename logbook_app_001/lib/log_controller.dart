@@ -63,7 +63,6 @@
 //   //   }
 //   // }
 
-
 //   Future<void> saveToDisk() async {
 //     final prefs = await SharedPreferences.getInstance();
 //     final String encodedData = jsonEncode(
@@ -84,7 +83,6 @@
 //   }
 // }
 
-
 import 'dart:convert'; // Wajib ditambahkan untuk jsonEncode & jsonDecode
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -94,14 +92,22 @@ import 'package:logbook_app_001/services/mongo_service.dart';
 import 'package:logbook_app_001/helpers/log_helper.dart';
 
 class LogController {
-  final ValueNotifier<List<LogModel>> logsNotifier =
-      ValueNotifier<List<LogModel>>([]);
+  // final ValueNotifier<List<LogModel>> logsNotifier =
+  //     ValueNotifier<List<LogModel>>([]);
+
+  List<LogModel> _cachedLogs = [];
+
+  Future<List<LogModel>> fetchLogs() async {
+    _cachedLogs = await MongoService().getLogs();
+    return _cachedLogs;
+  }
 
   // Kunci unik untuk penyimpanan lokal di Shared Preferences
   static const String _storageKey = 'user_logs_data';
 
   // Getter untuk mempermudah akses list data saat ini
-  List<LogModel> get logs => logsNotifier.value;
+  // List<LogModel> get logs => logsNotifier.value;
+  List<LogModel> get logs => _cachedLogs;
 
   // --- BARU: KONSTRUKTOR ---
   // Saat Controller dibuat, ia otomatis mencoba mengambil data lama
@@ -124,9 +130,9 @@ class LogController {
       await MongoService().insertLog(newLog);
 
       // 3. Update UI Lokal (Data sekarang sudah punya ID asli)
-      final currentLogs = List<LogModel>.from(logsNotifier.value);
-      currentLogs.add(newLog);
-      logsNotifier.value = currentLogs;
+      // final currentLogs = List<LogModel>.from(logsNotifier.value);
+      _cachedLogs.add(newLog);
+      // logsNotifier.value = currentLogs;
 
       await LogHelper.writeLog(
         "SUCCESS: Tambah data dengan ID lokal",
@@ -138,8 +144,13 @@ class LogController {
   }
 
   // 2. Memperbarui data di Cloud (HOTS: Sinkronisasi Terjamin)
-  Future<void> updateLog(int index, String newTitle, String newDesc, String newCategory) async {
-    final currentLogs = List<LogModel>.from(logsNotifier.value);
+  Future<void> updateLog(
+    int index,
+    String newTitle,
+    String newDesc,
+    String newCategory,
+  ) async {
+    final currentLogs = List<LogModel>.from(_cachedLogs);
     final oldLog = currentLogs[index];
 
     final updatedLog = LogModel(
@@ -156,7 +167,7 @@ class LogController {
 
       // 2. Jika sukses, baru perbarui state lokal
       currentLogs[index] = updatedLog;
-      logsNotifier.value = currentLogs;
+      _cachedLogs = currentLogs;
 
       await LogHelper.writeLog(
         "SUCCESS: Sinkronisasi Update '${oldLog.title}' Berhasil",
@@ -175,7 +186,7 @@ class LogController {
 
   // 3. Menghapus data dari Cloud (HOTS: Sinkronisasi Terjamin)
   Future<void> removeLog(int index) async {
-    final currentLogs = List<LogModel>.from(logsNotifier.value);
+    final currentLogs = List<LogModel>.from(_cachedLogs);
     final targetLog = currentLogs[index];
 
     try {
@@ -190,7 +201,7 @@ class LogController {
 
       // 2. Jika sukses, baru hapus dari state lokal
       currentLogs.removeAt(index);
-      logsNotifier.value = currentLogs;
+      _cachedLogs = currentLogs;
 
       await LogHelper.writeLog(
         "SUCCESS: Sinkronisasi Hapus '${targetLog.title}' Berhasil",
@@ -206,10 +217,14 @@ class LogController {
     }
   }
 
-    void searchLog(String logTitle) {
-    final currentLogs = List<LogModel>.from(logsNotifier.value);
-    final searchResults = currentLogs.where((log) => log.title.toLowerCase().contains(logTitle.toLowerCase())).toList();
-    logsNotifier.value = searchResults;
+  void searchLog(String logTitle) {
+    final currentLogs = List<LogModel>.from(_cachedLogs);
+    final searchResults = currentLogs
+        .where(
+          (log) => log.title.toLowerCase().contains(logTitle.toLowerCase()),
+        )
+        .toList();
+    _cachedLogs = searchResults;
   }
 
   // --- BARU: FUNGSI PERSISTENCE (SINKRONISASI JSON) ---
@@ -219,7 +234,7 @@ class LogController {
     final prefs = await SharedPreferences.getInstance();
     // Mengubah List of Object -> List of Map -> String JSON
     final String encodedData = jsonEncode(
-      logsNotifier.value.map((log) => log.toMap()).toList(),
+      _cachedLogs.map((log) => log.toMap()).toList(),
     );
     await prefs.setString(_storageKey, encodedData);
   }
@@ -228,6 +243,6 @@ class LogController {
   Future<void> loadFromDisk() async {
     // Mengambil dari Cloud, bukan lokal
     final cloudData = await MongoService().getLogs();
-    logsNotifier.value = cloudData;
+    _cachedLogs = cloudData;
   }
 }
