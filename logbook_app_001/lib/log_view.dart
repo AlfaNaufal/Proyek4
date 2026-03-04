@@ -309,7 +309,18 @@ class _LogViewState extends State<LogView> {
                   );
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.signal_wifi_off_outlined, size: 100),
+                        Text(
+                          "Error:\n${snapshot.error}",
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
                 }
                 if (snapshot.hasData) {
                   final currentLogs = snapshot.data!;
@@ -329,62 +340,81 @@ class _LogViewState extends State<LogView> {
                       ),
                     );
                   }
-                  return ListView.builder(
-                    itemCount: currentLogs.length,
-                    itemBuilder: (context, index) {
-                      final log = currentLogs[index];
-                      Color textColor = Colors.white;
-
-                      if (log.category == "Penting") {
-                        textColor = Colors.red;
-                      } else if (log.category == "Pribadi") {
-                        textColor = Colors.blue;
-                      } else if (log.category == "Pekerjaan") {
-                        textColor = Colors.orange;
-                      }
-
-                      return Dismissible(
-                        key: Key(log.date.toString()),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20),
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        onDismissed: (direction) async {
-                          await _controller.removeLog(index);
-                          
+                  return RefreshIndicator(
+                    onRefresh: () {
+                      return Future.delayed(
+                        Duration(seconds: 1), 
+                        () {
+                          _refreshData();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Catatan dihapus")),
+                            SnackBar(
+                              content: const Text('Page Refreshed'),
+                            ),
                           );
-                        },
-                        child: Card(
-                          color: textColor,
-                          child: ListTile(
-                            leading: const Icon(Icons.note),
-                            title: Text(
-                              log.title,
-                              style: TextStyle(fontSize: 30),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(log.category),
-                                Text(
-                                  log.description,
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () => _showEditLogDialog(index, log),
+                      });
+                    },
+                    child: ListView.builder(
+                      itemCount: currentLogs.length,
+                      itemBuilder: (context, index) {
+                        final log = currentLogs[index];
+                        Color textColor = Colors.white;
+
+                        if (log.category == "Penting") {
+                          textColor = Colors.red;
+                        } else if (log.category == "Pribadi") {
+                          textColor = Colors.blue;
+                        } else if (log.category == "Pekerjaan") {
+                          textColor = Colors.orange;
+                        }
+
+                        return Dismissible(
+                          key: Key(log.date.toString()),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
                             ),
                           ),
-                        ),
-                      );
-                    },
+                          onDismissed: (direction) async {
+                            await _controller.removeLog(index);
+
+                            _refreshData();
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Catatan dihapus")),
+                            );
+                          },
+                          child: Card(
+                            color: textColor,
+                            child: ListTile(
+                              leading: const Icon(Icons.note),
+                              title: Text(
+                                log.title,
+                                style: TextStyle(fontSize: 30),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(log.category),
+                                  Text(
+                                    log.description,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => _showEditLogDialog(index, log),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 }
                 return const SizedBox();

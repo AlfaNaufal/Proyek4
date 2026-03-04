@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logbook_app_001/features/models/log_model.dart';
@@ -74,7 +77,10 @@ class MongoService {
         level: 3,
       );
 
-      final List<Map<String, dynamic>> data = await collection.find().toList();
+      final List<Map<String, dynamic>> data = await collection
+          .find()
+          .toList()
+          .timeout(Duration(seconds: 4));
       return data.map((json) => LogModel.fromMap(json)).toList();
     } catch (e) {
       await LogHelper.writeLog(
@@ -82,7 +88,15 @@ class MongoService {
         source: _source,
         level: 1,
       );
-      return [];
+      // return [];
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('HandshakeException')) {
+        throw "Koneksi gagal. \nCoba periksa paket data atau Wifi Anda";
+      } else if (e is TimeoutException) {
+        throw "Server terlalu lama merespon";
+      } else {
+        throw "Terjadi kesalahan sistem";
+      }
     }
   }
 
