@@ -22,7 +22,7 @@ class LogModel {
     return {
       '_id': id ?? ObjectId(), // Buat ID otomatis jika belum ada
       'title': title,
-      'description': category,
+      'category': category,
       'description': description,
       'date': date.toIso8601String(), // Simpan tanggal dalam format standar
     };

@@ -352,8 +352,9 @@ class _LogViewState extends State<LogView> {
                           padding: const EdgeInsets.only(right: 20),
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        onDismissed: (direction) {
-                          _controller.removeLog(index);
+                        onDismissed: (direction) async {
+                          await _controller.removeLog(index);
+                          
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Catatan dihapus")),
                           );
