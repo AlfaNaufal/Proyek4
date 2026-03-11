@@ -17,7 +17,7 @@ class LogHelper {
 
     try {
       // 2. Format Waktu untuk Konsol
-      String timestamp = DateFormat('HH:mm:ss').format(DateTime.now());
+      String timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
       String label = _getLabel(level);
       String color = _getColor(level);
 

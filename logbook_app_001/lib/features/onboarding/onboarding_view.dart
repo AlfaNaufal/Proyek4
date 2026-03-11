@@ -26,6 +26,8 @@ class _OnboardingViewState extends State<OnboardingView> {
               controller: _pageController,
               children: [
                 Container(
+                  width: MediaQuery.widthOf(context),
+                  height: MediaQuery.heightOf(context),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
