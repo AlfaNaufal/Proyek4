@@ -47,7 +47,9 @@ class LogModel {
       'title': title,
       'category': category,
       'description': description,
-      'date': date.toIso8601String(), // Simpan tanggal dalam format standar
+      'date': date.toIso8601String(),
+      'authorId': authorId,
+      'teamId': teamId,
     };
   }
 

@@ -9,7 +9,8 @@ import 'package:logbook_app_001/services/access_control_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LogController {
-  final ValueNotifier<List<LogModel>> logsNotifier = ValueNotifier<List<LogModel>>([]);
+  final ValueNotifier<List<LogModel>> logsNotifier =
+      ValueNotifier<List<LogModel>>([]);
 
   // List<LogModel> _cachedLogs = [];
 
@@ -20,35 +21,34 @@ class LogController {
     _myBox = Hive.box<LogModel>('offline_logs');
   }
 
-    Future<void> loadLogs(String teamId) async {
-      // Langkah 1: Ambil data dari Hive (Sangat Cepat/Instan)
-      logsNotifier.value = _myBox.values.toList();
+  Future<void> loadLogs(String teamId) async {
+    // Langkah 1: Ambil data dari Hive (Sangat Cepat/Instan)
+    logsNotifier.value = _myBox.values.toList();
 
-      // Langkah 2: Sync dari Cloud (Background)
-      try {
-        final cloudData = await MongoService().getLogs(teamId);
+    // Langkah 2: Sync dari Cloud (Background)
+    try {
+      final cloudData = await MongoService().getLogs(teamId);
 
-        // Update Hive dengan data terbaru dari Cloud agar sinkron
-        await _myBox.clear();
-        await _myBox.addAll(cloudData);
+      // Update Hive dengan data terbaru dari Cloud agar sinkron
+      await _myBox.clear();
+      await _myBox.addAll(cloudData);
 
-        // Update UI dengan data Cloud
-        logsNotifier.value = cloudData;
+      // Update UI dengan data Cloud
+      logsNotifier.value = cloudData;
 
-        await LogHelper.writeLog(
-          "SYNC: Data berhasil diperbarui dari Atlas",
-          level: 2,
-        );
-      } catch (e) {
-        await LogHelper.writeLog(
-          "OFFLINE: Menggunakan data cache lokal",
-          level: 2,
-        );
-      }
+      await LogHelper.writeLog(
+        "SYNC: Data berhasil diperbarui dari Atlas",
+        level: 2,
+      );
+    } catch (e) {
+      await LogHelper.writeLog(
+        "OFFLINE: Menggunakan data cache lokal",
+        level: 2,
+      );
+    }
   }
 
-
-/// 2. ADD DATA (Instant Local + Background Cloud)
+  /// 2. ADD DATA (Instant Local + Background Cloud)
   Future<void> addLog(
     String title,
     String desc,
@@ -132,8 +132,15 @@ class LogController {
     final targetLog = currentLogs[index];
 
     // 1. GATEKEEPER CHECK (Cegah pembobolan)
-    if (!AccessControlService.canPerform(userRole, 'delete', isOwner: targetLog.authorId == userId)) {
-      await LogHelper.writeLog("SECURITY BREACH: Unauthorized delete attempt", level: 1);
+    if (!AccessControlService.canPerform(
+      userRole,
+      'delete',
+      isOwner: targetLog.authorId == userId,
+    )) {
+      await LogHelper.writeLog(
+        "SECURITY BREACH: Unauthorized delete attempt",
+        level: 1,
+      );
       return; // Langsung hentikan proses jika tidak punya izin
     }
 
@@ -147,8 +154,10 @@ class LogController {
       if (targetLog.id != null) {
         // Konversi String ke ObjectId sebelum dikirim ke MongoService
         final objectId = ObjectId.fromHexString(targetLog.id!);
-        await MongoService().deleteLog(objectId); // Sesuaikan jika MongoService kamu butuh String
-        
+        await MongoService().deleteLog(
+          objectId,
+        ); // Sesuaikan jika MongoService kamu butuh String
+
         await LogHelper.writeLog(
           "SUCCESS: Sinkronisasi Hapus '${targetLog.title}' Berhasil",
           source: "log_controller.dart",
@@ -165,18 +174,19 @@ class LogController {
   }
 
   void searchLog(String logTitle) {
-      if (logTitle.isEmpty) {
-        // Jika kosong, kembalikan seluruh data dari Hive
-        logsNotifier.value = _myBox.values.toList();
-        return;
-      }
-      
-      // Filter dari data lokal yang ada di box
-      final searchResults = _myBox.values
-          .where((log) => log.title.toLowerCase().contains(logTitle.toLowerCase()))
-          .toList();
-      logsNotifier.value = searchResults;
+    if (logTitle.isEmpty) {
+      // Jika kosong, kembalikan seluruh data dari Hive
+      logsNotifier.value = _myBox.values.toList();
+      return;
     }
+
+    // Filter dari data lokal yang ada di box
+    final searchResults = _myBox.values
+        .where(
+          (log) => log.title.toLowerCase().contains(logTitle.toLowerCase()),
+        )
+        .toList();
+    logsNotifier.value = searchResults;
   }
 
   // --- BARU: FUNGSI PERSISTENCE (SINKRONISASI JSON) ---
@@ -197,3 +207,4 @@ class LogController {
   //   final cloudData = await MongoService().getLogs();
   //   _cachedLogs = cloudData;
   // }
+}

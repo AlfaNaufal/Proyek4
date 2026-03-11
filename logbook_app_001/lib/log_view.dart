@@ -38,8 +38,9 @@ class _LogViewState extends State<LogView> {
     _controller.loadLogs(widget.currentUser['teamId']);
   }
 
-    // Navigasi ke Halaman Editor (Gantikan Dialog Lama)
+  // Navigasi ke Halaman Editor (Gantikan Dialog Lama)
   void _goToEditor({LogModel? log, int? index}) {
+    print("Tombol ditekan");
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -257,9 +258,7 @@ class _LogViewState extends State<LogView> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text("Konfirmasi Logout"),
-                    content: Text(
-                      "Apakah anda yakin akan keluar?",
-                    ),
+                    content: Text("Apakah anda yakin akan keluar?"),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
@@ -307,155 +306,307 @@ class _LogViewState extends State<LogView> {
               ),
             ),
           ),
+          // Expanded(
+          //   child: ValueListenableBuilder<List<LogModel>>(
+          //     valueListenable: _controller.logsNotifier,
+          //     builder: (context, currentLogs, child) {
+          //       // if (currentLogs.isEmpty) {
+          //       //   return const Center(
+          //       //     child: Column(
+          //       //       mainAxisAlignment: MainAxisAlignment.center,
+          //       //       children: [
+          //       //         CircularProgressIndicator(),
+          //       //         Text("Menghubungkan ke MongoDB Atlas...."),
+          //       //       ],
+          //       //     ),
+          //       //   );
+          //       // }
+          //       // if (snapshot.hasError) {
+          //       //   return Center(
+          //       //     child: Column(
+          //       //       mainAxisAlignment: MainAxisAlignment.center,
+          //       //       children: [
+          //       //         Icon(Icons.signal_wifi_off_outlined, size: 100),
+          //       //         Text(
+          //       //           "Error:\n${snapshot.error}",
+          //       //           textAlign: TextAlign.center,
+          //       //         ),
+          //       //       ],
+          //       //     ),
+          //       //   );
+          //       // }
+          //       // if (currentLogs.isEmpty) {
+          //       //   final currentLogs = snapshot.data!;
+
+          //       if (currentLogs.isEmpty) {
+          //         return const Center(
+          //           child: Column(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //               Icon(
+          //                 Icons.note_alt_outlined,
+          //                 size: 100,
+          //                 color: Colors.grey,
+          //               ),
+          //               Text("Belum ada catatan."),
+          //             ],
+          //           ),
+          //         );
+          //       }
+          //       return RefreshIndicator(
+          //         onRefresh: () {
+          //           return Future.delayed(Duration(seconds: 1), () {
+          //             ScaffoldMessenger.of(context).showSnackBar(
+          //               SnackBar(content: const Text('Page Refreshed')),
+          //             );
+          //           });
+          //         },
+          //         child: ListView.builder(
+          //           itemCount: currentLogs.length,
+          //           itemBuilder: (context, index) {
+          //             final log = currentLogs[index];
+          //             final bool isOwner =
+          //                 log.authorId == widget.currentUser['uid'];
+          //             Color textColor = Colors.white;
+
+          //             if (log.category == "Penting") {
+          //               textColor = Colors.red;
+          //             } else if (log.category == "Pribadi") {
+          //               textColor = Colors.blue;
+          //             } else if (log.category == "Pekerjaan") {
+          //               textColor = Colors.orange;
+          //             }
+
+          //             return Dismissible(
+          //               key: Key(log.date.toString()),
+          //               direction: DismissDirection.endToStart,
+          //               background: Container(
+          //                 color: Colors.red,
+          //                 alignment: Alignment.centerRight,
+          //                 padding: const EdgeInsets.only(right: 20),
+          //                 child: const Icon(Icons.delete, color: Colors.white),
+          //               ),
+          //               onDismissed: (direction) async {
+          //                 await _controller.removeLog(
+          //                   index,
+          //                   widget.currentUser['role'],
+          //                   widget.currentUser['uid'],
+          //                 );
+          //                 ScaffoldMessenger.of(context).showSnackBar(
+          //                   const SnackBar(content: Text("Catatan dihapus")),
+          //                 );
+          //               },
+          //               child: Card(
+          //                 color: textColor,
+          //                 child: ListTile(
+          //                   leading: const Icon(Icons.note),
+          //                   title: Text(
+          //                     log.title,
+          //                     style: TextStyle(fontSize: 30),
+          //                   ),
+          //                   subtitle: Column(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     children: [
+          //                       Text(log.category),
+          //                       Text(
+          //                         log.description,
+          //                         style: TextStyle(fontSize: 20),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                   trailing: Row(
+          //                     children: [
+          //                       if (AccessControlService.canPerform(
+          //                         widget.currentUser['role'],
+          //                         AccessControlService.actionUpdate,
+          //                         isOwner: isOwner,
+          //                       ))
+          //                         IconButton(
+          //                           icon: const Icon(
+          //                             Icons.edit,
+          //                             color: Colors.blue,
+          //                           ),
+          //                           onPressed: () =>
+          //                               _goToEditor(log: log, index: index),
+          //                         ),
+
+          //                       // GATEKEEPER: Tombol Delete hanya muncul kalau diizinkan
+          //                       if (AccessControlService.canPerform(
+          //                         widget.currentUser['role'],
+          //                         AccessControlService.actionDelete,
+          //                         isOwner: isOwner,
+          //                       ))
+          //                         IconButton(
+          //                           icon: const Icon(
+          //                             Icons.delete,
+          //                             color: Colors.red,
+          //                           ),
+          //                           onPressed: () => _controller.removeLog(
+          //                             index,
+          //                             widget.currentUser['role'],
+          //                             widget.currentUser['uid'],
+          //                           ),
+          //                         ),
+          //                     ],
+          //                   ),
+          //                   // IconButton(
+          //                   //   icon: const Icon(Icons.edit),
+          //                   //   onPressed: () => _goToEditor(),
+          //                   // ),
+          //                 ),
+          //               ),
+          //             );
+          //           },
+          //         ),
+          //       );
+          //       // }
+          //       // return const SizedBox();
+          //     },
+          //   ),
+          // ),
           Expanded(
             child: ValueListenableBuilder<List<LogModel>>(
               valueListenable: _controller.logsNotifier,
               builder: (context, currentLogs, child) {
-                // if (currentLogs.isEmpty) {
-                //   return const Center(
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         CircularProgressIndicator(),
-                //         Text("Menghubungkan ke MongoDB Atlas...."),
-                //       ],
-                //     ),
-                //   );
-                // }
-                // if (snapshot.hasError) {
-                //   return Center(
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         Icon(Icons.signal_wifi_off_outlined, size: 100),
-                //         Text(
-                //           "Error:\n${snapshot.error}",
-                //           textAlign: TextAlign.center,
-                //         ),
-                //       ],
-                //     ),
-                //   );
-                // }
-                // if (currentLogs.isEmpty) {
-                //   final currentLogs = snapshot.data!;
+                // Debugging: Melihat jumlah data sebenarnya di terminal
+                print("JUMLAH DATA SAAT INI DI HIVE: ${currentLogs.length}");
 
-                  if (currentLogs.isEmpty) {
-                    return const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.note_alt_outlined,
-                            size: 100,
-                            color: Colors.grey,
-                          ),
-                          Text("Belum ada catatan."),
-                        ],
-                      ),
-                    );
-                  }
-                  return RefreshIndicator(
-                    onRefresh: () {
-                      return Future.delayed(Duration(seconds: 1), () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: const Text('Page Refreshed')),
-                        );
-                      });
-                    },
-                    child: ListView.builder(
-                      itemCount: currentLogs.length,
-                      itemBuilder: (context, index) {
-                        final log = currentLogs[index];
-                        final bool isOwner = log.authorId == widget.currentUser['uid'];
-                        Color textColor = Colors.white;
-
-                        if (log.category == "Penting") {
-                          textColor = Colors.red;
-                        } else if (log.category == "Pribadi") {
-                          textColor = Colors.blue;
-                        } else if (log.category == "Pekerjaan") {
-                          textColor = Colors.orange;
-                        }
-
-                        return Dismissible(
-                          key: Key(log.date.toString()),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                            ),
-                          ),
-                          onDismissed: (direction) async {
-                            await _controller.removeLog(index,widget.currentUser['role'], widget.currentUser['uid']);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Catatan dihapus")),
-                            );
-                          },
-                          child: Card(
-                            color: textColor,
-                            child: ListTile(
-                              leading: const Icon(Icons.note),
-                              title: Text(
-                                log.title,
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(log.category),
-                                  Text(
-                                    log.description,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                              trailing: Row(
-                                children: [
-                                  if (AccessControlService.canPerform(
-                                    widget.currentUser['role'],
-                                    AccessControlService.actionUpdate,
-                                    isOwner: isOwner,
-                                  ))
-                                    IconButton(
-                                      icon: const Icon(Icons.edit, color: Colors.blue),
-                                      onPressed: () => _goToEditor(log: log, index: index),
-                                    ),
-
-                                  // GATEKEEPER: Tombol Delete hanya muncul kalau diizinkan
-                                  if (AccessControlService.canPerform(
-                                    widget.currentUser['role'],
-                                    AccessControlService.actionDelete,
-                                    isOwner: isOwner,
-                                  ))
-                                    IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
-                                      onPressed: () => _controller.removeLog(index, widget.currentUser['role'], widget.currentUser['uid']),
-                                    ),
-                                ],
-                              ) 
-                              // IconButton(
-                              //   icon: const Icon(Icons.edit),
-                              //   onPressed: () => _goToEditor(),
-                              // ),
-                            ),
-                          ),
-                        );
-                      },
+                if (currentLogs.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.note_alt_outlined,
+                          size: 100,
+                          color: Colors.grey,
+                        ),
+                        Text("Belum ada catatan."),
+                      ],
                     ),
                   );
-                // }
-                return const SizedBox();
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () {
+                    return Future.delayed(const Duration(seconds: 1), () {
+                      _controller.loadLogs(widget.currentUser['teamId'] ?? 'no_team');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Halaman diperbarui')),
+                      );
+                    });
+                  },
+                  child: ListView.builder(
+                    itemCount: currentLogs.length,
+                    itemBuilder: (context, index) {
+                      final log = currentLogs[index];
+                      final bool isOwner = log.authorId == widget.currentUser['uid'];
+                      
+                      // Fallback warna lembut agar teks hitam tetap terbaca
+                      Color cardColor = Colors.white;
+                      if (log.category == "Penting") {
+                        cardColor = Colors.red.shade100;
+                      } else if (log.category == "Pribadi") {
+                        cardColor = Colors.blue.shade100;
+                      } else if (log.category == "Pekerjaan") {
+                        cardColor = Colors.orange.shade100;
+                      }
+
+                      return Dismissible(
+                        key: Key(log.id?.toString() ?? index.toString()), // Lebih aman dari log.date
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onDismissed: (direction) async {
+                          await _controller.removeLog(
+                            index, 
+                            widget.currentUser['role'], 
+                            widget.currentUser['uid'],
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Catatan dihapus")),
+                          );
+                        },
+                        child: Card(
+                          elevation: 4, // PENTING: Memberi bayangan agar kartu putih tidak menghilang
+                          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          color: cardColor,
+                          child: ListTile(
+                            leading: const Icon(Icons.note, size: 30),
+                            title: Text(
+                              log.title.isNotEmpty ? log.title : "Tanpa Judul",
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Column(
+                              mainAxisSize: MainAxisSize.min, // PENTING: Mencegah layar blank (Unbounded Height)
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 5),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black12,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(log.category, style: const TextStyle(fontSize: 12)),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  log.description.isNotEmpty ? log.description : "Tidak ada deskripsi",
+                                  maxLines: 2, // PENTING: Mencegah teks terlalu panjang
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min, // PENTING: Mencegah error layout Row
+                              children: [
+                                if (AccessControlService.canPerform(
+                                  widget.currentUser['role'],
+                                  AccessControlService.actionUpdate,
+                                  isOwner: isOwner,
+                                ))
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () => _goToEditor(log: log, index: index),
+                                  ),
+
+                                if (AccessControlService.canPerform(
+                                  widget.currentUser['role'],
+                                  AccessControlService.actionDelete,
+                                  isOwner: isOwner,
+                                ))
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () => _controller.removeLog(
+                                      index, 
+                                      widget.currentUser['role'], 
+                                      widget.currentUser['uid'],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
               },
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _goToEditor,
+        onPressed: () => _goToEditor(),
         child: const Icon(Icons.add),
       ),
     );

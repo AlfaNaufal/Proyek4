@@ -33,7 +33,7 @@ class _LogEditorPageState extends State<LogEditorPage> {
     _descController = TextEditingController(
       text: widget.log?.description ?? '',
     );
-    _descController = TextEditingController(text: widget.log?.category ?? '',);
+    _categoryController = TextEditingController(text: widget.log?.category ?? 'umum');
 
     // TAMBAHKAN INI: Listener agar Pratinjau terupdate otomatis
     _descController.addListener(() {
@@ -57,7 +57,7 @@ class _LogEditorPageState extends State<LogEditorPage> {
         widget.index!,
         _titleController.text,
         _descController.text,
-        "uid"
+        _categoryController.text,
       );
     }
     Navigator.pop(context);
@@ -68,6 +68,7 @@ class _LogEditorPageState extends State<LogEditorPage> {
     // JANGAN LUPA: Bersihkan controller agar tidak memory leak
     _titleController.dispose();
     _descController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 

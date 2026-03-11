@@ -24,6 +24,9 @@ class _LoginViewState extends State<LoginView> {
     Map<String, String> user = {
       "username": _userController.text,
       "password": _passController.text,
+      "teamId": "team_1", 
+      "uid": "1",         
+      "role": "Ketua",
     };
     // Map<String, String> pass = {"password": _passController.text};
 
@@ -33,7 +36,7 @@ class _LoginViewState extends State<LoginView> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LogView(currentUser: user[0]),
+          builder: (context) => LogView(currentUser: user),
           // builder: (context) => CounterView(username: user['username']!),
         ),
       );
