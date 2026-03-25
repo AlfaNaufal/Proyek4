@@ -28,7 +28,6 @@ class AccessControlService {
   //   return hasBasicPermission;
   // }
   static bool canPerform(String role, String action, {bool isOwner = false}) {
-    // TASK 5: Kedaulatan Mutlak Pemilik Catatan
     if (action == actionUpdate || action == actionDelete) {
       // Tombol edit/delete HANYA muncul jika dia adalah pemilik aslinya, 
       // mengabaikan apakah dia 'Ketua' atau bukan.
