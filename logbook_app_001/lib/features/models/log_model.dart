@@ -23,10 +23,16 @@ class LogModel {
   final String description; 
 
   @HiveField(5)
-  final String authorId; // BARU
+  final String authorId;
 
   @HiveField(6)
-  final String teamId; // BARU
+  final String teamId;
+
+  @HiveField(7, defaultValue: true)
+  bool isSynced;
+
+  @HiveField(8, defaultValue: false)
+  bool isPublic;
 
 
   LogModel({
@@ -37,6 +43,8 @@ class LogModel {
     required this.date,
     required this.authorId,
     required this.teamId,
+    this.isSynced = true,
+    this.isPublic = false,
 
   });
 
@@ -50,6 +58,7 @@ class LogModel {
       'date': date.toIso8601String(),
       'authorId': authorId,
       'teamId': teamId,
+      'isPublic': isPublic,
     };
   }
 
@@ -63,7 +72,8 @@ class LogModel {
       date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
       authorId: map['authorId'] ?? 'unknown_user', // Cegah error null
       teamId: map['teamId'] ?? 'no_team',
-
+      isSynced: true,
+      isPublic: map['isPublic'] ?? false,
     );
   }
 

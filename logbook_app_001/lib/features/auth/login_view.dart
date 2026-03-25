@@ -24,19 +24,23 @@ class _LoginViewState extends State<LoginView> {
     Map<String, String> user = {
       "username": _userController.text,
       "password": _passController.text,
-      "teamId": "team_1", 
-      "uid": "1",         
+      "teamId": "team_1",
+      "uid": "1",
       "role": "Ketua",
     };
+
+    final inputUsername = _userController.text;
+    final inputPassword = _passController.text;
+
     // Map<String, String> pass = {"password": _passController.text};
 
-    bool isSuccess = _controller.login(user);
+    final isSuccess = _controller.login(inputUsername, inputPassword);
 
-    if (isSuccess) {
+    if (isSuccess != null) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LogView(currentUser: user),
+          builder: (context) => LogView(currentUser: isSuccess),
           // builder: (context) => CounterView(username: user['username']!),
         ),
       );

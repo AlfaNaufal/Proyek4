@@ -8,6 +8,7 @@ import 'package:logbook_app_001/services/mongo_service.dart';
 import 'package:logbook_app_001/features/logbook/log_editor_page.dart';
 import 'package:logbook_app_001/features/auth/login_view.dart';
 import 'package:logbook_app_001/services/access_control_service.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LogView extends StatefulWidget {
   final dynamic currentUser;
@@ -468,18 +469,28 @@ class _LogViewState extends State<LogView> {
             child: ValueListenableBuilder<List<LogModel>>(
               valueListenable: _controller.logsNotifier,
               builder: (context, currentLogs, child) {
+
+                final displayLogs = currentLogs.where((log) {
+                  return log.authorId == widget.currentUser['uid'] || log.isPublic == true;
+                }).toList();
+
                 // Debugging: Melihat jumlah data sebenarnya di terminal
                 print("JUMLAH DATA SAAT INI DI HIVE: ${currentLogs.length}");
 
-                if (currentLogs.isEmpty) {
-                  return const Center(
+                if (displayLogs.isEmpty) {
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.note_alt_outlined,
-                          size: 100,
-                          color: Colors.grey,
+                        // Icon(
+                        //   Icons.note_alt_outlined,
+                        //   size: 100,
+                        //   color: Colors.grey,
+                        // ),
+                        SvgPicture.asset(
+                          'lib/assets/Empty.svg',
+                          width: 200,
+                          height: 200,
                         ),
                         Text("Belum ada catatan."),
                       ],
@@ -504,12 +515,12 @@ class _LogViewState extends State<LogView> {
                       
                       // Fallback warna lembut agar teks hitam tetap terbaca
                       Color cardColor = Colors.white;
-                      if (log.category == "Penting") {
-                        cardColor = Colors.red.shade100;
-                      } else if (log.category == "Pribadi") {
-                        cardColor = Colors.blue.shade100;
-                      } else if (log.category == "Pekerjaan") {
+                      if (log.category == "Mechanical") {
                         cardColor = Colors.orange.shade100;
+                      } else if (log.category == "Electronic") {
+                        cardColor = Colors.red.shade100;
+                      } else if (log.category == "Software") {
+                        cardColor = Colors.blue.shade100;
                       }
 
                       return Dismissible(
@@ -560,15 +571,26 @@ class _LogViewState extends State<LogView> {
                                 const SizedBox(height: 5),
                                 Text(
                                   log.description.isNotEmpty ? log.description : "Tidak ada deskripsi",
-                                  maxLines: 2, // PENTING: Mencegah teks terlalu panjang
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // PENTING: Mencegah error layout Row
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+
+                                Tooltip(
+                                  message: log.isSynced ? "Tersinkronisasi" : "Menunggu Sinyal...",
+                                  child: Icon(
+                                    log.isSynced ? Icons.cloud_done : Icons.cloud_off,
+                                    color: log.isSynced ? Colors.green : Colors.grey,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+
                                 if (AccessControlService.canPerform(
                                   widget.currentUser['role'],
                                   AccessControlService.actionUpdate,

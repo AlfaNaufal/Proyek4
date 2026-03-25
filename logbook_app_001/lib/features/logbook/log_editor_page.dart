@@ -24,7 +24,10 @@ class LogEditorPage extends StatefulWidget {
 class _LogEditorPageState extends State<LogEditorPage> {
   late TextEditingController _titleController;
   late TextEditingController _descController;
-  late TextEditingController _categoryController;
+
+  late List<String> _categories = ["Mechanical", "Electronic", "Software", "umum"];
+  String _selectedCategory = "umum";
+  late bool _isPublic;
 
   @override
   void initState() {
@@ -33,7 +36,12 @@ class _LogEditorPageState extends State<LogEditorPage> {
     _descController = TextEditingController(
       text: widget.log?.description ?? '',
     );
-    _categoryController = TextEditingController(text: widget.log?.category ?? 'umum');
+    String initialCategory = widget.log?.category ?? 'umum';
+    if (!_categories.contains(initialCategory)) {
+      initialCategory = 'umum'; // Fallback jika datanya aneh
+    }
+    _selectedCategory = initialCategory;
+    _isPublic = widget.log?.isPublic ?? false;
 
     // TAMBAHKAN INI: Listener agar Pratinjau terupdate otomatis
     _descController.addListener(() {
@@ -47,9 +55,10 @@ class _LogEditorPageState extends State<LogEditorPage> {
       widget.controller.addLog(
         _titleController.text,
         _descController.text,
-        _categoryController.text,
+        _selectedCategory,
         widget.currentUser['uid'],
         widget.currentUser['teamId'],
+        _isPublic,
       );
     } else {
       // Update
@@ -57,7 +66,8 @@ class _LogEditorPageState extends State<LogEditorPage> {
         widget.index!,
         _titleController.text,
         _descController.text,
-        _categoryController.text,
+        _selectedCategory,
+        _isPublic,
       );
     }
     Navigator.pop(context);
@@ -68,7 +78,6 @@ class _LogEditorPageState extends State<LogEditorPage> {
     // JANGAN LUPA: Bersihkan controller agar tidak memory leak
     _titleController.dispose();
     _descController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 
@@ -110,6 +119,40 @@ class _LogEditorPageState extends State<LogEditorPage> {
                         border: InputBorder.none,
                       ),
                     ),
+                  ),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedCategory,
+                    decoration: const InputDecoration(
+                      labelText: "Kategori",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _categories.map((String category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        if (newValue != null) {
+                          _selectedCategory = newValue;
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  
+                  // --- BARU: TOGGLE PUBLIC/PRIVATE ---
+                  SwitchListTile(
+                    title: const Text("Bagikan secara Publik"),
+                    subtitle: Text(_isPublic ? "Rekan tim bisa melihat catatan ini" : "Hanya Anda yang bisa melihat catatan ini"),
+                    value: _isPublic,
+                    activeThumbColor: Colors.blue,
+                    onChanged: (bool value) {
+                      setState(() { 
+                        _isPublic = value;
+                      });
+                    },
                   ),
                 ],
               ),
