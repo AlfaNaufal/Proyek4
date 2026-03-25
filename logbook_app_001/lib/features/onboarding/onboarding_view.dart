@@ -9,7 +9,6 @@ class OnboardingView extends StatefulWidget {
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
-  int _step = 1;
 
   final PageController _pageController = PageController();
 
@@ -137,41 +136,6 @@ class _OnboardingViewState extends State<OnboardingView> {
           SizedBox(height: 50),
         ],
       ),
-
-      // Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       Text("Aplikasi Counter", style: TextStyle(fontSize: 20)),
-      //       SizedBox(
-      //         width: MediaQuery.widthOf(context) / 2,
-      //         child: Image.asset(pict, fit: BoxFit.contain),
-      //       ),
-      //       Text('${text[_step - 1]}', style: TextStyle(fontSize: 16)),
-      //       ElevatedButton(
-      //         onPressed: () {
-      //           if (_step < 3) {
-      //             if (_step == 1) {
-      //               pict = 'lib/assets/Nigo.png';
-      //             }
-      //             if (_step == 2) {
-      //               pict = 'lib/assets/both.png';
-      //             }
-      //             setState(() {
-      //               _step++;
-      //             });
-      //           } else {
-      //             Navigator.pushReplacement(
-      //               context,
-      //               MaterialPageRoute(builder: (context) => LoginView()),
-      //             );
-      //           }
-      //         },
-      //         child: Text("Next"),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }

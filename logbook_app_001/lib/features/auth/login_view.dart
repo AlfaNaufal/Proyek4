@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:logbook_app_001/features/auth/login_controller.dart';
-// import 'package:logbook_app_001/features/logbook/counter_view.dart';
 import 'package:logbook_app_001/log_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -21,18 +20,9 @@ class _LoginViewState extends State<LoginView> {
   int _count = 1;
 
   void _handleLogin() {
-    Map<String, String> user = {
-      "username": _userController.text,
-      "password": _passController.text,
-      "teamId": "team_1",
-      "uid": "1",
-      "role": "Ketua",
-    };
 
     final inputUsername = _userController.text;
     final inputPassword = _passController.text;
-
-    // Map<String, String> pass = {"password": _passController.text};
 
     final isSuccess = _controller.login(inputUsername, inputPassword);
 
@@ -41,7 +31,6 @@ class _LoginViewState extends State<LoginView> {
         context,
         MaterialPageRoute(
           builder: (context) => LogView(currentUser: isSuccess),
-          // builder: (context) => CounterView(username: user['username']!),
         ),
       );
     } else {

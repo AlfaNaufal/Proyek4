@@ -16,7 +16,7 @@ class LoginController {
         "username": "admin",
         "password": "123",
         "teamId": "team_1",
-        "uid": "1",
+        "uid": "0",
         "role": "Ketua",
       },
       {
@@ -56,9 +56,9 @@ class LoginController {
   Map<String, String>? login(String username, String password) {
     for (var user in _validuser) {
       if (user["username"] == username && user["password"] == password) {
-        return user; // Ketemu & Cocok
+        return user;
       }
     }
-    return null; // Gagal / Tidak ketemu
+    return null;
   }
 }

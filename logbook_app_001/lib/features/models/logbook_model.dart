@@ -1,7 +1,7 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Logbook {
-  final ObjectId? id; // Penanda unik global dari MongoDB
+  final ObjectId? id;
   final String title;
   final String description;
   final DateTime date;
@@ -13,17 +13,15 @@ class Logbook {
     required this.date,
   });
 
-  // [CONVERT] Memasukkan data ke "Kardus" (BSON/Map) untuk dikirim ke Cloud
   Map<String, dynamic> toMap() {
     return {
-      '_id': id ?? ObjectId(), // Buat ID otomatis jika belum ada
+      '_id': id ?? ObjectId(),
       'title': title,
       'description': description,
-      'date': date.toIso8601String(), // Simpan tanggal dalam format standar
+      'date': date.toIso8601String(),
     };
   }
 
-  // [REVERT] Membongkar "Kardus" (BSON/Map) kembali menjadi objek Flutter
   factory Logbook.fromMap(Map<String, dynamic> map) {
     return Logbook(
       id: map['_id'] as ObjectId?,

@@ -38,12 +38,11 @@ class _LogEditorPageState extends State<LogEditorPage> {
     );
     String initialCategory = widget.log?.category ?? 'umum';
     if (!_categories.contains(initialCategory)) {
-      initialCategory = 'umum'; // Fallback jika datanya aneh
+      initialCategory = 'umum';
     }
     _selectedCategory = initialCategory;
     _isPublic = widget.log?.isPublic ?? false;
 
-    // TAMBAHKAN INI: Listener agar Pratinjau terupdate otomatis
     _descController.addListener(() {
       setState(() {});
     });
@@ -51,7 +50,6 @@ class _LogEditorPageState extends State<LogEditorPage> {
 
   void _save() {
     if (widget.log == null) {
-      // Tambah Baru
       widget.controller.addLog(
         _titleController.text,
         _descController.text,
@@ -61,9 +59,8 @@ class _LogEditorPageState extends State<LogEditorPage> {
         _isPublic,
       );
     } else {
-      // Update
       widget.controller.updateLog(
-        widget.index!,
+        widget.log!.id!,
         _titleController.text,
         _descController.text,
         _selectedCategory,
@@ -75,7 +72,6 @@ class _LogEditorPageState extends State<LogEditorPage> {
 
   @override
   void dispose() {
-    // JANGAN LUPA: Bersihkan controller agar tidak memory leak
     _titleController.dispose();
     _descController.dispose();
     super.dispose();
@@ -141,8 +137,6 @@ class _LogEditorPageState extends State<LogEditorPage> {
                     },
                   ),
                   const SizedBox(height: 10),
-                  
-                  // --- BARU: TOGGLE PUBLIC/PRIVATE ---
                   SwitchListTile(
                     title: const Text("Bagikan secara Publik"),
                     subtitle: Text(_isPublic ? "Rekan tim bisa melihat catatan ini" : "Hanya Anda yang bisa melihat catatan ini"),

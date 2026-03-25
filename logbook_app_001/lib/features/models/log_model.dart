@@ -48,10 +48,9 @@ class LogModel {
 
   });
 
-    // [CONVERT] Memasukkan data ke "Kardus" (BSON/Map) untuk dikirim ke Cloud
   Map<String, dynamic> toMap() {
     return {
-      '_id': id != null ? ObjectId.fromHexString(id!) : ObjectId(), // Buat ID otomatis jika belum ada
+      '_id': id != null ? ObjectId.fromHexString(id!) : ObjectId(),
       'title': title,
       'category': category,
       'description': description,
@@ -62,7 +61,6 @@ class LogModel {
     };
   }
 
-  // [REVERT] Membongkar "Kardus" (BSON/Map) kembali menjadi objek Flutter
   factory LogModel.fromMap(Map<String, dynamic> map) {
     return LogModel(
       id: (map['_id'] as ObjectId?)?.oid,
@@ -70,49 +68,11 @@ class LogModel {
       category: map['category'] ?? '',
       description: map['description'] ?? '',
       date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
-      authorId: map['authorId'] ?? 'unknown_user', // Cegah error null
+      authorId: map['authorId'] ?? 'unknown_user',
       teamId: map['teamId'] ?? 'no_team',
       isSynced: true,
       isPublic: map['isPublic'] ?? false,
     );
   }
-
-  // LogModel({ 
-
-  //   required this.title,
-  //   required this.date, 
-  //   required this.category, 
-  //   required this.description, 
-
-  // }); 
-
- 
-
-  // // Untuk Tugas HOTS: Konversi Map (JSON) ke Object 
-  // factory LogModel.fromMap(Map<String, dynamic> map) { 
-
-  //   return LogModel( 
-
-  //     title: map['title'], 
-  //     date: map['date'],
-  //     category: map['category'],
-  //     description: map['description'], 
-  //   ); 
-  // } 
-
- 
-
-  // // Konversi Object ke Map (JSON) untuk disimpan 
-  // Map<String, dynamic> toMap() { 
-
-  //   return { 
-
-  //     'title': title, 
-  //     'date': date, 
-  //     'category': category,
-  //     'description': description, 
-  //   };
-
-  // } 
 
 } 
