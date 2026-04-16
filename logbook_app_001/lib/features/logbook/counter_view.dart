@@ -189,7 +189,7 @@ class _CounterViewState extends State<CounterView> {
                 children: [
                   FloatingActionButton(
                     onPressed: () => setState(() {
-                      _controller.stepDecrement();
+                      _controller.stepDecrement(widget.username);
                       _controller.saveLastValue(
                         _controller.value,
                         _controller.logs,
@@ -207,7 +207,7 @@ class _CounterViewState extends State<CounterView> {
                         action: SnackBarAction(
                           label: 'Reset',
                           onPressed: () => setState(() {
-                            _controller.stepReset();
+                            _controller.stepReset(widget.username);
                             _controller.saveLastValue(
                               _controller.value,
                               _controller.logs,
@@ -224,7 +224,7 @@ class _CounterViewState extends State<CounterView> {
                   FloatingActionButton(
                     onPressed: () {
                       setState(() {
-                        _controller.stepIncrement();
+                        _controller.stepIncrement(widget.username);
                         _controller.saveLastValue(
                           _controller.value,
                           _controller.logs,
