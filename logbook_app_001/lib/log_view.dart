@@ -5,6 +5,7 @@ import 'features/auth/login_view.dart';
 import 'package:logbook_app_001/features/logbook/log_editor_page.dart';
 import 'package:logbook_app_001/services/access_control_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:logbook_app_001/features/vision/vision_view.dart';
 
 class LogView extends StatefulWidget {
   final dynamic currentUser;
@@ -46,6 +47,17 @@ class _LogViewState extends State<LogView> {
         title: Text("LogBook : ${widget.currentUser['username']}"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.camera_alt_outlined),
+            tooltip: 'Smart Patrol Camera',
+            onPressed: () {
+              // Kode navigasi untuk pindah ke halaman kamera
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VisionView()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => _controller.loadLogs(widget.currentUser['teamId']),
