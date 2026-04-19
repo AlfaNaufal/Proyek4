@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:logbook_app_001/features/image_processing/image_processing_view.dart';
 
 import 'vision_controller.dart';
 import 'damage_painter.dart';
@@ -44,69 +46,132 @@ class _VisionViewState extends State<VisionView> {
     super.dispose();
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: const Text("Smart-Patrol Vision"),
+  //       actions: [
+  //         // Flashlight toggle (Phase 6 UX Enhancement)
+  //         IconButton(
+  //           icon: Icon(
+  //             _visionController.isFlashlightOn
+  //                 ? Icons.flash_on
+  //                 : Icons.flash_off,
+  //           ),
+  //           onPressed: _visionController.toggleFlashlight,
+  //           tooltip: 'Toggle Flashlight',
+  //         ),
+  //         // Overlay visibility toggle (Phase 6 UX Enhancement)
+  //         IconButton(
+  //           icon: Icon(
+  //             _visionController.isOverlayVisible
+  //                 ? Icons.visibility
+  //                 : Icons.visibility_off,
+  //           ),
+  //           onPressed: _visionController.toggleOverlay,
+  //           tooltip: 'Toggle Overlay',
+  //         ),
+  //       ],
+  //     ),
+  //     body: ListenableBuilder(
+  //       listenable: _visionController,
+  //       builder: (context, child) {
+  //         // Show loading if camera is initializing
+  //         if (!_visionController.isInitialized) {
+  //           return _buildLoadingState();
+  //         }
+
+  //         // Continue to Stack structure
+  //         return _buildVisionStack();
+  //       },
+  //     ),
+  //     floatingActionButton: FloatingActionButton(
+  //       onPressed: () async {
+  //         final image = await _visionController.takePhoto();
+  //         if (image != null && context.mounted) {
+  //           ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //               content: Text('Photo saved: ${image.path}'),
+  //               duration: const Duration(seconds: 3),
+  //               action: SnackBarAction(
+  //                 label: 'View',
+  //                 onPressed: () {
+  //                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  //                   // You can add code here to open the image
+  //                   // For now, just showing the path
+  //                 },
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //       },
+  //       tooltip: 'Capture Photo',
+  //       child: const Icon(Icons.camera),
+  //     ),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Smart-Patrol Vision"),
-        actions: [
-          // Flashlight toggle (Phase 6 UX Enhancement)
-          IconButton(
-            icon: Icon(
-              _visionController.isFlashlightOn
-                  ? Icons.flash_on
-                  : Icons.flash_off,
-            ),
-            onPressed: _visionController.toggleFlashlight,
-            tooltip: 'Toggle Flashlight',
-          ),
-          // Overlay visibility toggle (Phase 6 UX Enhancement)
-          IconButton(
-            icon: Icon(
-              _visionController.isOverlayVisible
-                  ? Icons.visibility
-                  : Icons.visibility_off,
-            ),
-            onPressed: _visionController.toggleOverlay,
-            tooltip: 'Toggle Overlay',
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
-        listenable: _visionController,
-        builder: (context, child) {
-          // Show loading if camera is initializing
-          if (!_visionController.isInitialized) {
-            return _buildLoadingState();
-          }
-
-          // Continue to Stack structure
-          return _buildVisionStack();
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final image = await _visionController.takePhoto();
-          if (image != null && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Photo saved: ${image.path}'),
-                duration: const Duration(seconds: 3),
-                action: SnackBarAction(
-                  label: 'View',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    // You can add code here to open the image
-                    // For now, just showing the path
-                  },
+    // Pindahkan ListenableBuilder ke atas Scaffold
+    // Agar AppBar dan seluruh isinya ikut ter-rebuild saat state berubah
+    return ListenableBuilder(
+      listenable: _visionController,
+      builder: (context, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Smart-Patrol Vision"),
+            actions: [
+              // Flashlight toggle
+              IconButton(
+                icon: Icon(
+                  _visionController.isFlashlightOn
+                      ? Icons.flash_on
+                      : Icons.flash_off,
                 ),
+                onPressed: _visionController.toggleFlashlight,
+                tooltip: 'Toggle Flashlight',
               ),
-            );
-          }
-        },
-        tooltip: 'Capture Photo',
-        child: const Icon(Icons.camera),
-      ),
+              // Overlay visibility toggle
+              IconButton(
+                icon: Icon(
+                  _visionController.isOverlayVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                ),
+                onPressed: _visionController.toggleOverlay,
+                tooltip: 'Toggle Overlay',
+              ),
+            ],
+          ),
+          // Logika Body disederhanakan karena sudah dibungkus ListenableBuilder di atas
+          body: !_visionController.isInitialized
+              ? _buildLoadingState()
+              : _buildVisionStack(),
+              
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              // 1. Tangkap gambar melalui controller
+              final imageXFile = await _visionController.takePhoto();
+              
+              if (imageXFile != null && context.mounted) {
+                // 2. Konversi XFile menjadi File (dart:io)
+                final imageFile = File(imageXFile.path);
+
+                // 3. Navigasi otomatis ke ImageProcessingView sambil membawa file foto
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ImageProcessingView(initialImage: imageFile),
+                  ),
+                );
+              }
+            },
+            tooltip: 'Capture and Process',
+            child: const Icon(Icons.auto_fix_high), // Ubah ikon agar lebih keren
+          ),
+        );
+      },
     );
   }
 
@@ -151,6 +216,8 @@ class _VisionViewState extends State<VisionView> {
   /// - Layer 1: CameraPreview with AspectRatio to prevent distortion
   /// - Layer 2: CustomPaint for digital overlay
   Widget _buildVisionStack() {
+      double cameraAspectRatio = _visionController.controller!.value.aspectRatio;
+      double portraitRatio = 1 / cameraAspectRatio;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -160,7 +227,7 @@ class _VisionViewState extends State<VisionView> {
         // This ensures the image maintains correct proportions
         Center(
           child: AspectRatio(
-            aspectRatio: _visionController.controller!.value.aspectRatio,
+            aspectRatio: portraitRatio,
             child: CameraPreview(_visionController.controller!),
           ),
         ),

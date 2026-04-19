@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:logbook_app_001/features/auth/login_controller.dart';
-import 'package:logbook_app_001/log_view.dart';
+import 'package:logbook_app_001/features/dashboard/dashboard_view.dart';
+// import 'package:logbook_app_001/log_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -30,7 +31,7 @@ class _LoginViewState extends State<LoginView> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LogView(currentUser: isSuccess),
+          builder: (context) => DashboardView(currentUser: isSuccess),
         ),
       );
     } else {

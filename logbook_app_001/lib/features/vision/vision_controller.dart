@@ -72,17 +72,17 @@ class VisionController extends ChangeNotifier with WidgetsBindingObserver {
     }
 
     try {
-      // Pause camera stream briefly to ensure clean capture
-      await controller!.pausePreview();
+      // // Pause camera stream briefly to ensure clean capture
+      // await controller!.pausePreview();
 
-      // Small delay to ensure camera is ready
-      await Future.delayed(const Duration(milliseconds: 100));
+      // // Small delay to ensure camera is ready
+      // await Future.delayed(const Duration(milliseconds: 100));
 
       // Capture the picture
       final image = await controller!.takePicture();
 
       // Resume camera stream
-      await controller!.resumePreview();
+      // await controller!.resumePreview();
 
       return image;
     } catch (e) {
@@ -126,7 +126,7 @@ class VisionController extends ChangeNotifier with WidgetsBindingObserver {
 
     try {
       await controller!.setFlashMode(
-        isFlashlightOn ? FlashMode.always : FlashMode.off,
+        isFlashlightOn ? FlashMode.torch : FlashMode.off,
       );
     } catch (e) {
       errorMessage = "Failed to toggle flashlight: $e";
