@@ -22,7 +22,9 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
 
   // 1. Fungsi Ambil Gambar dari Galeri
   Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       setState(() {
         _originalImageFile = File(pickedFile.path);
@@ -36,14 +38,14 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
     if (_originalImageFile == null) return;
 
     setState(() => _isProcessing = true);
-    await Future.delayed(const Duration(milliseconds: 100)); 
+    await Future.delayed(const Duration(milliseconds: 100));
 
     // a. Baca byte gambar asli
     final bytes = await _originalImageFile!.readAsBytes();
-    
+
     // b. Decode menjadi matrix piksel (format image Dart)
     img.Image? decodedImage = img.decodeImage(bytes);
-    
+
     if (decodedImage != null) {
       // c. MANIPULASI MATEMATIKA PIKSEL (Inverse: 255 - nilai piksel)
       for (var pixel in decodedImage) {
@@ -104,7 +106,7 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
         int vInt = (cMax * 255).round().clamp(0, 255);
 
         hsvPixels.add([h, s]); // Simpan memori warna asli
-        histV[vInt]++;         // Masukkan kecerahan ke histogram
+        histV[vInt]++; // Masukkan kecerahan ke histogram
       }
 
       List<int> cdfV = List.filled(256, 0);
@@ -120,9 +122,14 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
       for (var p in image) {
         double h = hsvPixels[pixelIndex][0];
         double s = hsvPixels[pixelIndex][1];
-        
-        int oldV = (math.max(p.r/255.0, math.max(p.g/255.0, p.b/255.0)) * 255).round().clamp(0, 255);
-        int newVInt = ((cdfV[oldV] - cdfMin) / (totalPixels - cdfMin) * 255).round().clamp(0, 255);
+
+        int oldV =
+            (math.max(p.r / 255.0, math.max(p.g / 255.0, p.b / 255.0)) * 255)
+                .round()
+                .clamp(0, 255);
+        int newVInt = ((cdfV[oldV] - cdfMin) / (totalPixels - cdfMin) * 255)
+            .round()
+            .clamp(0, 255);
         double v = newVInt / 255.0;
 
         double c = v * s;
@@ -130,12 +137,31 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
         double m = v - c;
 
         double rPrime = 0, gPrime = 0, bPrime = 0;
-        if (h >= 0 && h < 60) { rPrime = c; gPrime = x; bPrime = 0; }
-        else if (h >= 60 && h < 120) { rPrime = x; gPrime = c; bPrime = 0; }
-        else if (h >= 120 && h < 180) { rPrime = 0; gPrime = c; bPrime = x; }
-        else if (h >= 180 && h < 240) { rPrime = 0; gPrime = x; bPrime = c; }
-        else if (h >= 240 && h < 300) { rPrime = x; gPrime = 0; bPrime = c; }
-        else if (h >= 300 && h < 360) { rPrime = c; gPrime = 0; bPrime = x; }
+        if (h >= 0 && h < 60) {
+          rPrime = c;
+          gPrime = x;
+          bPrime = 0;
+        } else if (h >= 60 && h < 120) {
+          rPrime = x;
+          gPrime = c;
+          bPrime = 0;
+        } else if (h >= 120 && h < 180) {
+          rPrime = 0;
+          gPrime = c;
+          bPrime = x;
+        } else if (h >= 180 && h < 240) {
+          rPrime = 0;
+          gPrime = x;
+          bPrime = c;
+        } else if (h >= 240 && h < 300) {
+          rPrime = x;
+          gPrime = 0;
+          bPrime = c;
+        } else if (h >= 300 && h < 360) {
+          rPrime = c;
+          gPrime = 0;
+          bPrime = x;
+        }
 
         p.r = ((rPrime + m) * 255).round().clamp(0, 255);
         p.g = ((gPrime + m) * 255).round().clamp(0, 255);
@@ -179,7 +205,14 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
             }
           }
           // Batasi nilai agar tetap di rentang 0-255
-          output.setPixelRgba(x, y, r.clamp(0, 255).toInt(), g.clamp(0, 255).toInt(), b.clamp(0, 255).toInt(), 255);
+          output.setPixelRgba(
+            x,
+            y,
+            r.clamp(0, 255).toInt(),
+            g.clamp(0, 255).toInt(),
+            b.clamp(0, 255).toInt(),
+            255,
+          );
         }
       }
       _processedImageBytes = img.encodeJpg(output);
@@ -246,10 +279,10 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
       for (var p in image) {
         // Cari nilai rata-rata (Grayscale)
         int luminance = (0.299 * p.r + 0.587 * p.g + 0.114 * p.b).round();
-        
+
         // Operasi Logika: Jika lebih terang dari 128, jadikan putih. Jika tidak, hitam.
         int bw = luminance > 128 ? 255 : 0;
-        
+
         p.r = bw;
         p.g = bw;
         p.b = bw;
@@ -270,10 +303,7 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('OpenCV Alternative (Pure Dart)'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Manipulasi Citra'), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -283,13 +313,19 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text("Original", style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        "Original",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
                       Container(
                         height: 200,
                         color: Colors.grey[300],
                         child: _originalImageFile != null
-                            ? Image.file(_originalImageFile!, fit: BoxFit.contain)
+                            ? Image.file(
+                                _originalImageFile!,
+                                fit: BoxFit.contain,
+                              )
                             : const Center(child: Text("No Image")),
                       ),
                     ],
@@ -300,36 +336,47 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text("Processed", style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        "Processed",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
                       Container(
                         height: 200,
                         color: Colors.grey[300],
-                        child: _isProcessing 
+                        child: _isProcessing
                             ? const Center(child: CircularProgressIndicator())
                             : _processedImageBytes != null
-                                ? Image.memory(_processedImageBytes!, fit: BoxFit.contain)
-                                : const Center(child: Text("Result")),
+                            ? Image.memory(
+                                _processedImageBytes!,
+                                fit: BoxFit.contain,
+                              )
+                            : const Center(child: Text("Result")),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Tombol Upload
             ElevatedButton.icon(
               onPressed: _pickImage,
               icon: const Icon(Icons.upload_file),
               label: const Text("Upload Gambar"),
-              style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
             ),
 
             const SizedBox(height: 24),
             const Divider(),
-            const Text("Pilih Operasi Citra", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Pilih Operasi Citra",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             Wrap(
               spacing: 10,
@@ -343,45 +390,57 @@ class _ImageProcessingViewState extends State<ImageProcessingView> {
                 ),
                 ActionChip(
                   label: const Text("2. Histogram Equalization"),
-                  onPressed: _originalImageFile == null ? null : _applyHistogramEq,
+                  onPressed: _originalImageFile == null
+                      ? null
+                      : _applyHistogramEq,
                   backgroundColor: Colors.green[100],
                 ),
                 ActionChip(
                   label: const Text("3. Lowpass (Blur)"),
-                  onPressed: _originalImageFile == null ? null : () {
-                    // Kernel Mean Filter 3x3
-                    _applyConvolution([
-                      1/9, 1/9, 1/9,
-                      1/9, 1/9, 1/9,
-                      1/9, 1/9, 1/9
-                    ]);
-                  },
+                  onPressed: _originalImageFile == null
+                      ? null
+                      : () {
+                          // Kernel Mean Filter 3x3
+                          _applyConvolution([
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                            1 / 9,
+                          ]);
+                        },
                   backgroundColor: Colors.orange[100],
                 ),
                 ActionChip(
                   label: const Text("4. Highpass (Edge Detection)"),
-                  onPressed: _originalImageFile == null ? null : () {
-                    // Kernel Laplacian 3x3
-                    _applyConvolution([
-                      0, -1,  0,
-                     -1,  4, -1,
-                      0, -1,  0
-                    ]);
-                  },
+                  onPressed: _originalImageFile == null
+                      ? null
+                      : () {
+                          // Kernel Laplacian 3x3
+                          _applyConvolution([0, -1, 0, -1, 4, -1, 0, -1, 0]);
+                        },
                   backgroundColor: Colors.red[100],
                 ),
                 ActionChip(
                   label: const Text("5. Median Filter (Reduksi Derau)"),
-                  onPressed: _originalImageFile == null ? null : _applyMedianFilter,
+                  onPressed: _originalImageFile == null
+                      ? null
+                      : _applyMedianFilter,
                   backgroundColor: Colors.teal[100],
                 ),
                 ActionChip(
                   label: const Text("6. Threshold (Binerisasi)"),
-                  onPressed: _originalImageFile == null ? null : _applyThreshold,
+                  onPressed: _originalImageFile == null
+                      ? null
+                      : _applyThreshold,
                   backgroundColor: Colors.purple[100],
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
